@@ -1,3 +1,5 @@
+//Game Logic
+
 const game = (function () {
     let board = [
         [3, 4, 5],
@@ -5,16 +7,16 @@ const game = (function () {
         [9, 10, 11],
     ];
 
-    const makeMove = (type, row, col) => {
-        if (row > 2 || col > 2 || row < 0 || col < 0) {
+    const makeMove = (type, loc) => {
+        if (loc[0] > 2 || loc[1] > 2 || loc[0] < 0 || loc[1] < 0) {
             return false;
         }
         if (type.toUpperCase() === "X" || type === 1) {
-            board[row][col] = 1;
-            console.log(board);
+            board[loc[0]][loc[1]] = 1;
+            // console.log(board);
             return true;
         } else if (type.toUpperCase() === "O" || type === 2) {
-            board[row][col] = 2;
+            board[loc[0]][loc[1]] = 2;
             return true;
         } else {
             return false;
@@ -96,7 +98,45 @@ const game = (function () {
     return { makeMove, checkWin };
 })();
 
-game.makeMove("x", 0, 2);
-game.makeMove("x", 1, 1);
-game.makeMove("x", 2, 0);
-game.checkWin();
+//DOM Manipulation
+
+const displayController = (function () {
+    const locations = [
+        [0, 0],
+        [0, 1],
+        [0, 2],
+        [1, 0],
+        [1, 1],
+        [1, 2],
+        [2, 0],
+        [2, 1],
+        [2, 2],
+    ];
+
+    let currentMove = true;
+    let index = 0;
+
+    const listenForClick = (boxes) => {
+        boxes.forEach((element) => {
+            element.value = index;
+            index++;
+            element.addEventListener("click", (e) => {
+                if (currentMove) {
+                    element.textContent = "X";
+                    game.makeMove("X", locations[element.value]);
+                    currentMove = !currentMove;
+                } else {
+                    element.textContent = "O";
+                    game.makeMove("O", locations[element.value]);
+                    currentMove = !currentMove;
+                }
+            });
+        });
+    };
+
+    return { listenForClick };
+})();
+
+const boxes = document.querySelectorAll(".game-box");
+
+displayController.listenForClick(boxes);
