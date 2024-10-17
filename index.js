@@ -7,6 +7,14 @@ const game = (function () {
         [9, 10, 11],
     ];
 
+    const resetBoard = () => {
+        board = [
+            [3, 4, 5],
+            [6, 7, 8],
+            [9, 10, 11],
+        ];
+    };
+
     const makeMove = (type, loc) => {
         if (loc[0] > 2 || loc[1] > 2 || loc[0] < 0 || loc[1] < 0) {
             return false;
@@ -94,8 +102,9 @@ const game = (function () {
         }
 
         console.log("no winner");
+        return false;
     };
-    return { makeMove, checkWin };
+    return { resetBoard, makeMove, checkWin };
 })();
 
 //DOM Manipulation
@@ -116,6 +125,13 @@ const displayController = (function () {
     let currentMove = true;
     let index = 0;
 
+    function clearBoard(boxes) {
+        boxes.forEach((element) => {
+            element.textContent = "";
+        });
+        game.resetBoard();
+    }
+
     const listenForClick = (boxes) => {
         boxes.forEach((element) => {
             element.value = index;
@@ -129,6 +145,11 @@ const displayController = (function () {
                     element.textContent = "O";
                     game.makeMove("O", locations[element.value]);
                     currentMove = !currentMove;
+                }
+                if (game.checkWin()) {
+                    alert("Congrats You Win!");
+                    game.resetBoard();
+                    clearBoard(boxes);
                 }
             });
         });
